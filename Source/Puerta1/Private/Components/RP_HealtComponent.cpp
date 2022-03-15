@@ -19,7 +19,7 @@ void URP_HealtComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Health = MaxHealth;
-
+	
 
 	MyOwner = GetOwner();
 	if(IsValid(MyOwner))
