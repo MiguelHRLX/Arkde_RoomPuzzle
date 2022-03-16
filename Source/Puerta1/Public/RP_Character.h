@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 //#include "RP_Weapon.h"
 #include "Components/RP_HealtComponent.h"
+
 #include "GameFramework/Character.h"
 #include "RP_Character.generated.h"
 
+class ARP_GameMod;
 class ARP_Weapon;
 class USpringArmComponent;
 class UCameraComponent;
@@ -91,6 +93,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
 	UAnimInstance* MyAnimInstance;
 
+	ARP_GameMod* GameModeReference;
 	
 protected:
 	UFUNCTION()
@@ -119,11 +122,12 @@ protected:
 	UFUNCTION()
 	void MakeMeleeDamage(UPrimitiveComponent*OverlappedComponent, AActor*OtherActor, UPrimitiveComponent*OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	
+	UFUNCTION()
+	void OnHealthChange(URP_HealtComponent* CurrentHealthComponent, AActor* DamagedActor, float Damage, const class UDamageType*DamageType, class AController*InstigatedBy, AActor*DamageCauser);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	  
 	void InitializeReferences();
 
 public:	

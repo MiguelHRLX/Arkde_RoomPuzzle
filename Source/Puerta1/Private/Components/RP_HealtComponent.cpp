@@ -46,6 +46,16 @@ void URP_HealtComponent::TakingDamage(AActor* DamagedActor, float Damage, const 
 
 	Health = FMath::Clamp(Health - Damage, 0.0f, MaxHealth);
 
-	UE_LOG(LogTemp,Log,TEXT("My health is :%s"),*FString::SanitizeFloat(Health)  );
+	if(Health==0.0f)
+	{
+		bIsDead = true;
+	}
+
+	OnHealthChangeDelegate.Broadcast(this,DamagedActor,Damage,DamageType,InstigatedBy,DamageCauser);
+	
+	if(bDebug)
+	{
+		UE_LOG(LogTemp, Log, TEXT("My health is :%s"), *FString::SanitizeFloat(Health));
+	}
 }
 
