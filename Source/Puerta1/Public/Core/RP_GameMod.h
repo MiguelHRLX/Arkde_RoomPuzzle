@@ -10,10 +10,25 @@
  * 
  */
 class ARP_Character;
+class ARP_SpectatingCamera;
+
+
 UCLASS()
 class PUERTA1_API ARP_GameMod : public AGameModeBase
 {
 	GENERATED_BODY()
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, Category = "Spectating Camera")
+		ARP_SpectatingCamera* VictoryCamera;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Spectating Camera")
+		ARP_SpectatingCamera* GameOverCamera;
 public:
 	UFUNCTION()
 	void Victory(ARP_Character *Character);

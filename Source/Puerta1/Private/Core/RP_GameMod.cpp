@@ -3,8 +3,18 @@
 
 #include "Core/RP_GameMod.h"
 #include "RP_Character.h"
+#include "RP_SpectatingCamera.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+void ARP_GameMod::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TArray<AActor*>SpectatingCameraActors;
+	UGameplayStatics::GetActorOfClass(GetWorld(),ARP_SpectatingCamera::StaticClass());//array de un tipo de actores
+}
 
 void ARP_GameMod::Victory(ARP_Character* Character)
 {
