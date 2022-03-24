@@ -21,14 +21,19 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void SetupSpectatingCameras();
 
+	void MoveCameraToSpectatingPoint(ARP_Character* Character,ARP_SpectatingCamera*SpectatingCamera );
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spectating Camera")
+		float SpectatingBlendTime;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Spectating Camera")
-		ARP_SpectatingCamera* VictoryCamera;
+	ARP_SpectatingCamera* VictoryCamera;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Spectating Camera")
-		ARP_SpectatingCamera* GameOverCamera;
+	ARP_SpectatingCamera* GameOverCamera;
+
 public:
 	UFUNCTION()
 	void Victory(ARP_Character *Character);

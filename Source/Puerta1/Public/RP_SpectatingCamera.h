@@ -11,11 +11,11 @@ class UStaticMeshComponent;
 
 
 UENUM(Blueprintable)
-enum ERP_SpectatingCameraType :uint8
+enum class ERP_SpectatingCameraType :uint8
 {
-	CameraType_None UMETA(DisplayName="None");
-    CameraType_Victory UMETA(DisplayName = "Victory");
-    CameraType_GameOver UMETA(DisplayName = "Game Over");
+	CameraType_None   UMETA(DisplayName = "None"),
+    CameraType_Victory   UMETA(DisplayName = "Victory"),
+    CameraType_GameOver   UMETA(DisplayName = "Game Over")
 };
 
 
@@ -29,12 +29,13 @@ public:
 	ARP_SpectatingCamera();
 
 protected:
+	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Components")
 	UStaticMeshComponent*SpectatingCameraComponent;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Component")
-		ERP_SpectatingCameraType CameraType;
+	ERP_SpectatingCameraType CameraType;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,5 +45,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	ERP_SpectatingCameraType GetCameraType(){return CameraType};
+	ERP_SpectatingCameraType GetCameraType() { return CameraType; };
 };

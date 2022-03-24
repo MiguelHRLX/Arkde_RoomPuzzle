@@ -9,7 +9,7 @@ ARP_SpectatingCamera::ARP_SpectatingCamera()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SpectatingCameraComponent = CreateDefaultSubobject<UMeshComponent>(TEXT("SpectatingCameraComponent"));
+	SpectatingCameraComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SpectatingCameraComponent"));
 	RootComponent = SpectatingCameraComponent;
 
 }
