@@ -54,8 +54,10 @@ ARP_Character::ARP_Character()
 
 	HealtComponent = CreateDefaultSubobject<URP_HealtComponent>(TEXT("HealthComponent"));
 
-
-
+	bUltimateInTick = true;
+	MaxUltimateXP = 100.0f;
+	MaxUltimateDuration = 10.0f;
+	UltimateFrequency = 0.5f;
 }
 
 FVector ARP_Character::GetPawnViewLocation() const
@@ -99,6 +101,10 @@ void ARP_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(bIsUsingUltimate&&bUltimateInTick)
+	{
+		UpdateUltimateDuration(DeltaTime);
+	}
 
 }
 
@@ -123,7 +129,10 @@ void ARP_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction("Melee", IE_Pressed, this, &ARP_Character::StartMelee);
 	PlayerInputComponent->BindAction("Melee", IE_Released, this, &ARP_Character::StopMelee);
-	
+
+
+	PlayerInputComponent->BindAction("Ultimate", IE_Pressed, this, &ARP_Character::StartUltimate);
+	PlayerInputComponent->BindAction("Ultimate", IE_Released, this, &ARP_Character::StopUltimate);
 }
 
 
@@ -255,6 +264,27 @@ void ARP_Character::CreateInitialWeapon()
 	}
 }
 
+void ARP_Character::StartUltimate()
+{
+	if(bCanUseUltimate&&!bIsUsingUltimate)
+	{
+		CurrentUltimateDuration = MaxUltimateDuration;
+		bCanUseUltimate = false;
+		bIsUsingUltimate = true;
+
+		if(!bUltimateInTick)
+		{
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle_Ultimate, this, &ARP_Character::UpdateUltimateDurationWithTimer, UltimateFrequency, true);
+
+		}
+		BP_StartUltimate();
+	}
+}
+
+void ARP_Character::StopUltimate()
+{
+}
+
 void ARP_Character::MakeMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(IsValid(OtherActor)){
@@ -293,5 +323,45 @@ void ARP_Character::ResetCombo()
 	SetComboEnable(false);
 	CurrentComboMultiplier = 1;
 
+}
+
+void ARP_Character::GainUltimateXP(float XPGained)
+{
+	if(bCanUseUltimate||bIsUsingUltimate)
+	{
+		return;
+	}
+
+	CurrentUltimateXP =FMath::Clamp(CurrentUltimateXP+XPGained,0.0f,MaxUltimateXP);
+
+	if(MaxUltimateXP==CurrentUltimateXP)
+	{
+		bCanUseUltimate = true;
+	}
+
+	BP_GainUltimateXP(XPGained);
+}
+
+void ARP_Character::UpdateUltimateDuration(float value)
+{
+	CurrentUltimateDuration = FMath::Clamp(CurrentUltimateDuration-value,0.0f,MaxUltimateDuration);
+
+	BP_UpdateUltimateDuration(value);
+	if(CurrentUltimateDuration==0)
+	{
+		bIsUsingUltimate = false;
+
+		if(!bUltimateInTick)
+		{
+			GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Ultimate);
+		}
+
+		BP_StopUltimate();
+	}
+}
+
+void ARP_Character::UpdateUltimateDurationWithTimer()
+{
+	UpdateUltimateDuration(UltimateFrequency);
 }
 

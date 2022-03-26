@@ -21,6 +21,9 @@ protected:
 	UStaticMeshComponent* KeyMeshComponent;
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "key")
+	float XPValue;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "key")
 	FName KeyTag;
 

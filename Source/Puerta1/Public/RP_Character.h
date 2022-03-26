@@ -72,6 +72,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Game Over")
 	bool bHasDestroy;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate")
+	bool bCanUseUltimate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate")
+	bool bIsUsingUltimate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ultimate")
+	bool bUltimateInTick;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee")
 	float MeleeDamage;
 
@@ -80,6 +89,21 @@ protected:
 
 	UPROPERTY( BlueprintReadOnly, Category = "Melee",meta = (EditCondition = bCanMakeCombos, ClampMin = 1, UIMin = 1))
 	float CurrentComboMultiplier;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Ultimate",meta=(ClampMin=0.0,UIMin=0.0))
+	float MaxUltimateXP;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate")
+	float CurrentUltimateXP;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|time", meta = (ClampMin = 0.0, UIMin = 0.0))
+	float MaxUltimateDuration;
+
+	UPROPERTY( BlueprintReadOnly, Category = "Ultimate|time")
+	float CurrentUltimateDuration;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|time")
+	float UltimateFrequency;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="keys")
 	TArray<FName> DoorKeys;
@@ -97,7 +121,9 @@ protected:
 	UAnimInstance* MyAnimInstance;
 
 	ARP_GameMod* GameModeReference;
-	
+
+
+	FTimerHandle TimerHandle_Ultimate;
 protected:
 	UFUNCTION()
 	void MoveForward(float value);
@@ -121,6 +147,12 @@ protected:
 	void StopMelee();
 
 	void CreateInitialWeapon();
+
+	void StartUltimate();
+
+	void StopUltimate();
+
+
 
 	UFUNCTION()
 	void MakeMeleeDamage(UPrimitiveComponent*OverlappedComponent, AActor*OtherActor, UPrimitiveComponent*OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -150,11 +182,33 @@ public:
 	void SetMeleeState(bool NewState);
 
 	UFUNCTION(BlueprintCallable)//para que 
-		void SetComboEnable(bool NewState);
+	void SetComboEnable(bool NewState);
 
 	UFUNCTION(BlueprintCallable)
-		void ResetCombo();
+	void ResetCombo();
 
 
 	bool HasToDestroy() { return bHasDestroy; };
+
+
+	UFUNCTION(BlueprintCallable)
+	void GainUltimateXP(float XPGained);
+
+
+	void UpdateUltimateDuration(float value);
+
+	void UpdateUltimateDurationWithTimer();
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	void BP_GainUltimateXP(float XPGained);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void BP_StartUltimate();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void BP_UpdateUltimateDuration(float value);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void BP_StopUltimate();
 };
