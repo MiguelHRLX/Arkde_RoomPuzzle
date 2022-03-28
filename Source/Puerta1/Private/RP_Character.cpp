@@ -13,6 +13,7 @@
 #include "Puerta1/Puerta1.h"
 #include "Components/RP_HealtComponent.h"
 #include "Core/RP_GameMod.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ARP_Character::ARP_Character()
@@ -58,6 +59,11 @@ ARP_Character::ARP_Character()
 	MaxUltimateXP = 100.0f;
 	MaxUltimateDuration = 10.0f;
 	UltimateFrequency = 0.5f;
+	NormalWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	UltimateWalkSpeed = 1000.0f;
+	PlayRate = 1;
+	UltimatePlayRate = 2;
+	UltimateShootFrequency = 0.02f;
 }
 
 FVector ARP_Character::GetPawnViewLocation() const
@@ -188,6 +194,10 @@ void ARP_Character::StartWeaponAction()
 	if(IsValid(CurrentWeapon))
 	{
 		CurrentWeapon->StartWeaponAction();
+		if (bIsUsingUltimate)
+		{
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle_AutomaticShoot, CurrentWeapon, &ARP_Weapon::StartWeaponAction, UltimateShootFrequency, true);
+		}
 	}
 	
 }
@@ -201,9 +211,12 @@ void ARP_Character::StopWeaponAction()
 	if (IsValid(CurrentWeapon))
 	{
 		CurrentWeapon->StopWeaponAction();
+		if (bIsUsingUltimate)
+		{
+			GetWorld()->GetTimerManager().ClearTimer(TimerHandle_AutomaticShoot);
+		}
 	}
 }
-
 void ARP_Character::StartMelee()
 {
 	if(bIsDoingMelee&&!bCanMakeCombos)
@@ -238,7 +251,7 @@ void ARP_Character::StartMelee()
 	//UE_LOG(LogTemp, Log,TEXT( "melee start"));
    if(IsValid(MyAnimInstance)&&IsValid(MeleeMontage))
    {
-	   MyAnimInstance->Montage_Play(MeleeMontage);
+	   MyAnimInstance->Montage_Play(MeleeMontage,PlayRate);
    }
    SetMeleeState(true);
 }
@@ -270,13 +283,19 @@ void ARP_Character::StartUltimate()
 	{
 		CurrentUltimateDuration = MaxUltimateDuration;
 		bCanUseUltimate = false;
-		bIsUsingUltimate = true;
+		
 
-		if(!bUltimateInTick)
+		if(IsValid(MyAnimInstance)&&IsValid(UltimateMontage))
 		{
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle_Ultimate, this, &ARP_Character::UpdateUltimateDurationWithTimer, UltimateFrequency, true);
-
+			GetCharacterMovement()->MaxWalkSpeed = 0;
+		  const float StartUltimateMontageDuration= MyAnimInstance->Montage_Play(UltimateMontage);
+		  GetWorld()->GetTimerManager().SetTimer(TimerHandle_BeginUltimateBehaviour,this,&ARP_Character::BeginUltimateBehaviour,StartUltimateMontageDuration,false);
+		}else
+		{
+			BeginUltimateBehaviour();
 		}
+
+	
 		BP_StartUltimate();
 	}
 }
@@ -347,10 +366,16 @@ void ARP_Character::UpdateUltimateDuration(float value)
 	CurrentUltimateDuration = FMath::Clamp(CurrentUltimateDuration-value,0.0f,MaxUltimateDuration);
 
 	BP_UpdateUltimateDuration(value);
+
+
 	if(CurrentUltimateDuration==0)
 	{
 		bIsUsingUltimate = false;
 
+		GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
+		PlayRate = 1.0f;
+
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle_AutomaticShoot);
 		if(!bUltimateInTick)
 		{
 			GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Ultimate);
@@ -363,5 +388,18 @@ void ARP_Character::UpdateUltimateDuration(float value)
 void ARP_Character::UpdateUltimateDurationWithTimer()
 {
 	UpdateUltimateDuration(UltimateFrequency);
+}
+
+void ARP_Character::BeginUltimateBehaviour()
+{
+	bIsUsingUltimate = true;
+	GetCharacterMovement()->MaxWalkSpeed = UltimateWalkSpeed;//
+	PlayRate = UltimatePlayRate;
+
+	if (!bUltimateInTick)
+	{
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle_Ultimate, this, &ARP_Character::UpdateUltimateDurationWithTimer, UltimateFrequency, true);
+
+	}
 }
 

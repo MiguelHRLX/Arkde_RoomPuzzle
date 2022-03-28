@@ -49,12 +49,6 @@ protected:
 	bool bIsLookInversion;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aiming")
-	FName FPSCameraSocketName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melle")
-	FName MeleeSocketName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aiming")
 	bool bUseFirstPersonView;
 
 	UPROPERTY( BlueprintReadOnly, Category = "Melee")
@@ -81,6 +75,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ultimate")
 	bool bUltimateInTick;
 
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aiming")
+		FName FPSCameraSocketName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melle")
+		FName MeleeSocketName;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee")
 	float MeleeDamage;
 
@@ -105,7 +106,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|time")
 	float UltimateFrequency;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="keys")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|Abilities", meta = (ClampMin = 0.0, UIMin = 0.0))
+	float UltimateWalkSpeed;
+
+	UPROPERTY( BlueprintReadOnly, Category = "Ultimate|Abilities")
+	float NormalWalkSpeed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|Abilities", meta = (ClampMin = 0.0, UIMin = 0.0))
+	float UltimatePlayRate;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Ultimate|Abilities")
+	float PlayRate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|Abilities", meta = (ClampMin = 0.0, UIMin = 0.0))
+	float UltimateShootFrequency;
+
+    UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="keys")
 	TArray<FName> DoorKeys;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Weapon")
@@ -120,10 +136,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
 	UAnimInstance* MyAnimInstance;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+	UAnimMontage* UltimateMontage;
+
 	ARP_GameMod* GameModeReference;
 
 
 	FTimerHandle TimerHandle_Ultimate;
+
+	FTimerHandle TimerHandle_AutomaticShoot;
+
+	FTimerHandle TimerHandle_BeginUltimateBehaviour;
 protected:
 	UFUNCTION()
 	void MoveForward(float value);
@@ -198,6 +221,8 @@ public:
 	void UpdateUltimateDuration(float value);
 
 	void UpdateUltimateDurationWithTimer();
+
+	void BeginUltimateBehaviour();
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
