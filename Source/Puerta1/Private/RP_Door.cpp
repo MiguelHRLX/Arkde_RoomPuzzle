@@ -51,7 +51,7 @@ void ARP_Door::CheckKeyFromPlayer( UPrimitiveComponent* OverlappedComponent,AAct
 			return;
 		}
 		ARP_Character* OverlappedCharacter = Cast<ARP_Character>(OtherActor);
-		if(IsValid(OverlappedCharacter))
+		if(IsValid(OverlappedCharacter)&&OverlappedCharacter->GetCharacterTpe() == ERP_CharacterType::CharacterType_Player)
 		{
 			if (OverlappedCharacter->HasKey(DoorTag))
 			{

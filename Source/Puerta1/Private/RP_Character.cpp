@@ -313,7 +313,7 @@ void ARP_Character::MakeMeleeDamage(UPrimitiveComponent* OverlappedComponent, AA
 
 void ARP_Character::OnHealthChange(URP_HealtComponent* CurrentHealthComponent, AActor* DamagedActor, float Damage,const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	if(HealtComponent->IsDead())
+	if(HealtComponent->IsDead()&& GetCharacterTpe() == ERP_CharacterType::CharacterType_Player)
 	{
 		if(IsValid(GameModeReference)){
 			GameModeReference->GameOver(this);

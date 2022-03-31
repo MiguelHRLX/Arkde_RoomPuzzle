@@ -16,6 +16,15 @@ class UCameraComponent;
 class UAnimMontage;
 class UAnimInstance;
 class URP_HealtComponent;
+
+UENUM(Blueprintable)
+enum class ERP_CharacterType :uint8
+{
+	CharacterType_Player   UMETA(DisplayName = "Player"),
+	CharacterType_Enemy   UMETA(DisplayName = "Enemy")
+};
+
+
 UCLASS()
 
 class PUERTA1_API ARP_Character : public ACharacter
@@ -124,6 +133,9 @@ protected:
     UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="keys")
 	TArray<FName> DoorKeys;
 
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	ERP_CharacterType CharacterType;
+
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Weapon")
 	TSubclassOf<ARP_Weapon>InitialWeaponClass;
 
@@ -223,6 +235,9 @@ public:
 	void UpdateUltimateDurationWithTimer();
 
 	void BeginUltimateBehaviour();
+
+	UFUNCTION(BlueprintCallable)
+		ERP_CharacterType GetCharacterTpe() { return CharacterType; };
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)

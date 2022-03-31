@@ -24,7 +24,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "key")
 	float XPValue;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "key")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "key")
 	FName KeyTag;
 
 protected:
